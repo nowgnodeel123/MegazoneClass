@@ -1,11 +1,5 @@
 package ch8;
 
-/***************************************************
- * 
- * 
- * 
-***************************************************/
-
 public class ExceptionEx5 {
 
 	public static void main(String[] args) {
@@ -26,6 +20,24 @@ public class ExceptionEx5 {
 		} finally {
 			deleteTempFiles();
 		}
+
+		// checked 예외를 unchecked 로 변경하는 경우
+		// Exception -> RuntimeException 으로 형변환.
+		// 연결된 예외임.
+		MemoryException met = new MemoryException("unchecked 예외용");
+
+		// Exception -> RuntimeException 으로 변경됨.
+		// 하지만 실제로는 연결된 예외임.
+		// RuntimeException(met)
+		// -> super((Throwable)met) -> Exception((Throwable)met) ->
+		// -> super((Throwable)met) -> Throwable((Throwable)met) ->
+		// this.cause = (Throwable)met;
+
+		// Throwalbe class 의 cause 인스턴스 변수에 저장
+		// 원인이 되는 예외 => 연결된 예외.
+
+		// 결론적으로 checked -> unchecked 로 변경됨. 컴파일 체크를 하지 않게 됨.
+		RuntimeException rex = new RuntimeException(met);
 	}
 
 	static void install() throws InstallException {
@@ -102,15 +114,21 @@ public class ExceptionEx5 {
  *
  */
 
-/*
- * * 발생한 예외를 그냥 처리하면 되는데, 왠지 복잡해진 것 같은.. - 하나의 큰 분류의 예외로 묶어서 관리하고 싶은 경우. 큰 분류의
- * 예외로 catch 해서 처리하려고 하는데, 실제로 발생한 예외를 알 수가 없게 됨.
+/**
+ * 연결된 예외
+ * 
+ * 큰 분류로 묶어서 관리하는 경우, checked 예외를 unchecked 로 변경하는 경우를 주로 사용 가능성이 높음.
+ * 
+ * 발생한 예외를 그냥 처리하면 되는데, 왠지 복잡해진 것 같은.. - 하나의 큰 분류의 예외로 묶어서 관리하고 싶은 경우. 큰 분류의 예외로
+ * catch 해서 처리하려고 하는데, 실제로 발생한 예외를 알 수가 없게 됨.
  * 
  * 목적 : 추상화 또는 상속을 통해서 다형성을통해 관리의 편리성을 높이기 위함. => 반복되는 코드가 줄어들게됨. (다형성이 적용된
  * 매개변수, 반환타입)
  * 
  * - 상속 관계로 exception 을 정의하면 casting 이 필요해짐. 파생된 exception 이 많아지게 되면, casting 의
  * 부담이 증가.
+ * 
+ * casting 대신에 initCause(), getCause()
  * 
  * - checked 예외를 unchecked 로 변경하려고 하는 경우. new RuntimeException((new
  * MemoryException())) => unchecked
